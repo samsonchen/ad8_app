@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Layout } from './components/Layout';
 import { StartScreen } from './components/StartScreen';
 import { QuizScreen } from './components/QuizScreen';
@@ -14,18 +14,17 @@ interface HistoryItem {
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('start');
   const [score, setScore] = useState(0);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('ad8_history');
+  const [history, setHistory] = useState<HistoryItem[]>(() => {
+    const saved = localStorage.getItem('bbs_history');
     if (saved) {
       try {
-        setHistory(JSON.parse(saved));
+        return JSON.parse(saved);
       } catch (e) {
         console.error("Failed to load history", e);
       }
     }
-  }, []);
+    return [];
+  });
 
   const handleStart = () => {
     setCurrentScreen('quiz');
@@ -36,7 +35,7 @@ function App() {
     const newItem = { date: new Date().toISOString(), score: finalScore };
     const newHistory = [...history, newItem];
     setHistory(newHistory);
-    localStorage.setItem('ad8_history', JSON.stringify(newHistory));
+    localStorage.setItem('bbs_history', JSON.stringify(newHistory));
     setCurrentScreen('result');
     window.scrollTo(0, 0);
   };

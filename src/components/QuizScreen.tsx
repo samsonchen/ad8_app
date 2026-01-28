@@ -9,17 +9,8 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({ onFinish }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [score, setScore] = useState(0);
 
-    const handleAnswer = (isYes: boolean) => {
-        // Yes (isYes=true) adds 1 point (Problem/Change detected)
-        // No (isYes=false) adds 0 points (No change)
-        // However, we process the score *after* the click.
-        // Wait, state update is async. I'll calculate `finalScore` for passing to finish.
-
-        // Correct logic:
-        // If this is the last question, we need to include this answer in the score passed to onFinish.
-
-        const point = isYes ? 1 : 0;
-        const nextScore = score + point;
+    const handleAnswer = (points: number) => {
+        const nextScore = score + points;
 
         if (currentIndex < questions.length - 1) {
             setScore(nextScore);
@@ -31,11 +22,13 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({ onFinish }) => {
         }
     };
 
+    const scoreButtons = [0, 1, 2, 3, 4];
+
     return (
         <div style={{ width: '100%' }}>
             <div role="progressbar" aria-valuenow={currentIndex + 1} aria-valuemin={1} aria-valuemax={questions.length}
                 style={{ marginBottom: '20px', fontSize: '1.5rem', textAlign: 'center', fontWeight: 'bold' }}>
-                問題 {currentIndex + 1} / {questions.length}
+                項目 {currentIndex + 1} / {questions.length}
             </div>
 
             <div className="question-card" style={{
@@ -50,31 +43,41 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({ onFinish }) => {
                 </h2>
             </div>
 
-            <div className="quiz-actions">
-                <button
-                    onClick={() => handleAnswer(true)}
-                    className="quiz-btn"
-                    style={{
-                        backgroundColor: '#FFEBEE',
-                        color: '#D32F2F',
-                        borderColor: '#D32F2F'
-                    }}
-                >
-                    <span>是</span>
-                    <span style={{ fontSize: '1rem', marginTop: '5px' }}>有改變</span>
-                </button>
-                <button
-                    onClick={() => handleAnswer(false)}
-                    className="quiz-btn"
-                    style={{
-                        backgroundColor: '#E8F5E9',
-                        color: '#2E7D32',
-                        borderColor: '#2E7D32'
-                    }}
-                >
-                    <span>否</span>
-                    <span style={{ fontSize: '1rem', marginTop: '5px' }}>無改變</span>
-                </button>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '10px',
+                flexWrap: 'wrap'
+            }}>
+                {scoreButtons.map((points) => (
+                    <button
+                        key={points}
+                        onClick={() => handleAnswer(points)}
+                        style={{
+                            width: '60px',
+                            height: '60px',
+                            fontSize: '1.8rem',
+                            fontWeight: 'bold',
+                            borderRadius: '12px',
+                            border: '3px solid #1976D2',
+                            backgroundColor: '#E3F2FD',
+                            color: '#1976D2',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        {points}
+                    </button>
+                ))}
+            </div>
+
+            <div style={{
+                textAlign: 'center',
+                marginTop: '20px',
+                fontSize: '1.1rem',
+                color: '#666'
+            }}>
+                0 = 無法執行 ← → 4 = 獨立完成
             </div>
         </div>
     );
